@@ -29,11 +29,62 @@ mongoose
 const app = express();
 
 // view engine setup
+// app.use(session({
+//   secret: 'Wishes',
+//   resave: true,
+//   saveUninitialized: true,
+//   cookie: { httpOnly: true, maxAge: 2419200000 },
+//   store: new MongoStore({ mongooseConnection: mongoose.connection }),
+
+// }));
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(cors({
+  credentials: true,
+  origin: ['http://localhost:4200']
+}));
+app.use(logger('dev'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
+
+passport.use(new LocalStrategy((username, password, next) => {
+  User.findOne({ username }, (err, foundUser) => {
+    if (err) {
+      next(err);
+      return;
+    }
+
+    if (!foundUser) {
+      next(null, false, { message: 'Incorrect username-password combination' });
+      return;
+    }
+
+    if (!bcrypt.compareSync(password, foundUser.password)) {
+      next(null, false, { message: 'Incorrect username-password combination' });
+      return;
+    }
+
+    next(null, foundUser);
+  });
+}));
+
+passport.serializeUser((loggedInUser, cb) => {
+  cb(null, loggedInUser._id);
+});
+
+passport.deserializeUser((sessionUserId, cb) => {
+  User.findById(sessionUserId, (err, userDocument) => {
+    if (err) { return cb(err); }
+    cb(null, userDocument);
+  });
+});
+
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 // default value for title local
-app.locals.title = 'Express - Generated with IronGenerator';
+app.locals.title = 'The Lottery Genie';
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));

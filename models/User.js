@@ -14,15 +14,74 @@ const userSchema = new Schema(
         numbersPlayed: {
             // counter to tell how many sets of numbers you have saved
             counterPick2: Number,
-            //    array of saved tickets
+            //    array of saved tickets for each game
             pick2: [
                 {
                     Ticket: Number,
                     SavedAt: Date,
-                    pick2Numbers: []
+                    pick2Numbers: [{}]
                 }
-            ]
+            ],
+
+            pick3: [
+                {
+                    Ticket: Number,
+                    SavedAt: Date,
+                    pick3Numbers: [{}]
+                }
+            ],
+
+            pick4: [
+                {
+                    Ticket: Number,
+                    SavedAt: Date,
+                    pick4Numbers: [{}]
+                }
+            ],
+
+            pick5: [
+                {
+                    Ticket: Number,
+                    SavedAt: Date,
+                    pick5Numbers: [{}]
+                }
+            ],
+
+            Fantasy5: [
+                {
+                    Ticket: Number,
+                    SavedAt: Date,
+                    Fantasy5Numbers: [{}]
+                }
+            ],
+
+            luckyMoney: [
+                {
+                    Ticket: Number,
+                    SavedAt: Date,
+                    megaMillionsNumbers: [{}]
+                }
+            ],
+
+            megaMillions: [
+                {
+                    Ticket: Number,
+                    SavedAt: Date,
+                    megaMillionsNumbers: [{}]
+                }
+            ],
+
+            powerBalls: [
+                {
+                    Ticket: Number,
+                    SavedAt: Date,
+                    PowerBallNumbers: [{}]
+                }
+            ],
+
+
         },
+
         experiencePoints: {
             type: Number,
             default: 100
