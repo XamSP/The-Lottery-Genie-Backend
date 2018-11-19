@@ -29,14 +29,14 @@ mongoose
 const app = express();
 
 // view engine setup
-// app.use(session({
-//   secret: 'Wishes',
-//   resave: true,
-//   saveUninitialized: true,
-//   cookie: { httpOnly: true, maxAge: 2419200000 },
-//   store: new MongoStore({ mongooseConnection: mongoose.connection }),
+app.use(session({
+  secret: 'Wishes',
+  resave: true,
+  saveUninitialized: true,
+  cookie: { httpOnly: true, maxAge: 2419200000 },
+  store: new MongoStore({ mongooseConnection: mongoose.connection }),
 
-// }));
+}));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(cors({
@@ -80,9 +80,17 @@ passport.deserializeUser((sessionUserId, cb) => {
   });
 });
 
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
+// Express View engine setup
+app.use(require('node-sass-middleware')({
+  src: path.join(__dirname, 'public'),
+  dest: path.join(__dirname, 'public'),
+  sourceMap: true
+}));
 
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'hbs');
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(favicon(path.join(__dirname, 'public', 'images', 'favicon.ico')));
 // default value for title local
 app.locals.title = 'The Lottery Genie';
 
@@ -96,7 +104,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 // app.use(layouts);
 
 const index = require('./routes/index');
+const authRoutes = require('./routes/auth');
+const userRoutes = require('./routes/user');
 app.use('/', index);
+app.use('/auth', authRoutes);
+app.use('/user', userRoutes);
+
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
@@ -114,6 +127,11 @@ app.use((err, req, res, next) => {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
+});
+
+// default route is nothing else is caught
+app.use(function (req, res) {
+  res.sendfile(__dirname + '/public/index.html');
 });
 
 module.exports = app;
